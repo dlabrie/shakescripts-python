@@ -1,0 +1,30 @@
+version: '3'
+services:
+  swapbot:
+    container_name: swapbot
+    entrypoint: ["python", "refund.py"]
+    restart: always
+    build:
+      context: docker-swapbot
+    networks:
+      - default
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Halifax
+    volumes:
+      - ./pyscripts:/opt/shakepyscripts
+  swapbot-tools:
+    container_name: swapbot-tools
+    entrypoint: ["sleep","864000"]
+    restart: unless-stopped
+    build:
+      context: docker-swapbot
+    networks:
+      - default
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Halifax
+    volumes:
+      - ./pyscripts:/opt/shakepyscripts
