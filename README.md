@@ -1,4 +1,4 @@
-# Shakescripts Python
+# Shakepay Python Bot
 
 
 ## How to get it going
@@ -30,7 +30,7 @@ docker exec -it swapbot-tools sh
 
 Swap initiator
 ```bash
-python swap.py domi167 somiadow
+python swap.py domi167 somiadow hydra stmich
 ```
 Transactions with a swapper
 ```bash
