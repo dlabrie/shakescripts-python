@@ -3,12 +3,19 @@
 
 ## How to get it going
 
+Docker:
 ```bash
 docker-compose build
 docker-compose up -d swapbot-tools
 docker exec -it swapbot-tools sh
 python login.py
 ```
+No Docker:
+```bash
+pip install --no-cache-dir -r requirements.txt
+python login.py
+```
+
 Now before you start the bot, you should adjust all your balances in the all_swaps() function of shakepay.py.
 You can see what they are with:
 ```bash
