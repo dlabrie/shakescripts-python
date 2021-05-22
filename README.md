@@ -18,13 +18,22 @@ python login.py
 
 Now before you start the bot, you should adjust all your balances in the all_swaps() function of shakepay.py.
 You can see what they are with:
+Docker+No Docker:
 ```bash
 python all_swaps.py
 ```
+
+Docker: CTRL+D to detach
+
 Once you are satisfied with the outcome:
-CTRL + d to detach
+
+Docker:
 ```bash
 docker-compose up -d swapbot
+```
+No Docker:
+```bash
+python refund.py
 ```
 The swapbot should be running from there on
 
