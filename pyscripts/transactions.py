@@ -5,6 +5,8 @@ for swapper in sys.argv:
     if swapper=="swapper.py": 
         continue
 
+    swapper = swapper.lower()
+
     print("Pulling transactions for "+swapper)
 
     swaps = swapperTransactions(swapper)

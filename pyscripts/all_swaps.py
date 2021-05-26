@@ -16,13 +16,13 @@ swapsSummary = {key: val for key, val in sorted(swapsSummary.items(), key = lamb
 
 print("\n------------ You owe these people ------------")
 for transaction in swapsSummary:
-    if swapsSummary[transaction]["balance"] > 0.1:
+    if swapsSummary[transaction]["balance"] > 0.05:
         print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | "+swapsSummary[transaction]["transaction"]["note"]+" |", swapsSummary[transaction]["swapper"], "|", swapsSummary[transaction]["balance"])
 
 
 print("\n\n------------ These people owe you ------------")
 for transaction in swapsSummary:
-    if swapsSummary[transaction]["balance"] < -0.1:
+    if swapsSummary[transaction]["balance"] < -0.05:
         print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | "+swapsSummary[transaction]["transaction"]["note"]+" |", swapsSummary[transaction]["swapper"], "|", swapsSummary[transaction]["balance"])
 
 

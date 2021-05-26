@@ -6,6 +6,7 @@ import requests
 import uuid
 import json
 import pytz
+import csv
 
 def getUUID():
     fakeUUID = ""
@@ -100,7 +101,12 @@ def saveTransactionsCache(transactions):
     f.write(json.dumps(transactions))
     f.close()
 
+transactionsJson = ""
 def getTransactionsCache():
+    global transactionsJson
+    if transactionsJson != "":
+        return transactionsJson
+
     transactions = '{ "lastPull":0, "data":{} }'
     try:
         f = open(".transactions", 'r')
@@ -115,17 +121,17 @@ def getTransactionsCache():
     transactionsJson = json.loads(transactions)
     return transactionsJson
 
-def pullTransactions(page):
-    if page == 1:
+def pullTransactions(page,size=200):
+    if page == 1 and size == 200:
         body = {"filterParams":{"currencies":["CAD"]}}
     else:
-        body =  {"pagination":{"descending":True,"rowsPerPage":200,"page":page}, "filterParams":{}}
+        body =  {"pagination":{"descending":True,"rowsPerPage":size,"page":page}, "filterParams":{}}
 
     print("Will pull transactions page "+str(page), body)
 
     return shakepayAPIPost("/transactions/history", body)
 
-def updateTransactions():
+def updateTransactions(size=200):
     page = 1
     transactionsCache = getTransactionsCache()
     transactions = transactionsCache["data"]
@@ -136,7 +142,7 @@ def updateTransactions():
         foundStart = False
         transactionCounter = 0
 
-        newTransactionsResponse = pullTransactions(page)
+        newTransactionsResponse = pullTransactions(page, size)
         newTransactions = json.loads(newTransactionsResponse.text)
 
         for transaction in newTransactions["data"]:
@@ -164,8 +170,8 @@ def updateTransactions():
     
         print("checked "+str(transactionCounter)+" from this pull")
 
-        if transactionCounter != 200:
-            print("got less than 200 transactions, reached the end?")
+        if transactionCounter != size:
+            print("got less than "+str(size)+" transactions, means we reached the end")
             break;
 
         if foundExistingTransaction > 10:
@@ -195,29 +201,19 @@ def all_swaps():
 
     swapperBalance = {}
 
-    # Adjustements for donations
-    swapperBalance["someoneqc"] = -9.01
+    try:
+        f = open("swapperBalances.csv", "r")
+        f.close()
+    except:
+        f = open("swapperBalances.csv", "w")
+        f.write("")
+        f.close()
 
-    swapperBalance["woblz"] = -0.01
-    swapperBalance["cannacaged"] = -0.01
-    swapperBalance["mstaxidrvr2"] = -0.01
-    swapperBalance["cdcrawford"] = 50.00
-
-    # Adjustements for people I gave money to
-    swapperBalance["hydra"] = 4.2
-    swapperBalance["ddcazes"] = 0.69
-
-    # scummers
-    #swapperBalance["kingdesigner187"] = 4.90
-    swapperBalance["tammyz"] = 4.90
-    swapperBalance["danielcrypto"] = 4.90
-    swapperBalance["michaelday"] = 4.90
-    swapperBalance["joshduerksen"] = 4.90
-    swapperBalance["moneyburner"] = 4.90
-
-    #fuck ups
-    swapperBalance["wills"] = 4.90
-    swapperBalance["kiks"] = 4.90
+    with open('swapperBalances.csv') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+        for row in csv_reader:
+            swapperBalance[row[0]]=float(row[1])
 
     for transaction in transactions:
         if transactions[transaction]["direction"] == "credit":
