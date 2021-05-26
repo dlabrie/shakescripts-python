@@ -1,48 +1,5 @@
-# Shakepay Python Bot
 
-
-## How to get it going
-
-Docker:
-```bash
-docker-compose build
-docker-compose up -d swapbot-tools
-docker exec -it swapbot-tools sh
-python login.py
-```
-No Docker:
-```bash
-pip install --no-cache-dir -r requirements.txt
-python login.py
-```
-
-Now before you start the bot, you should adjust all your balances in the all_swaps() function of shakepay.py.
-You can see what they are with:
-Docker+No Docker:
-```bash
-python all_swaps.py
-```
-
-Docker: CTRL+D to detach
-
-Once you are satisfied with the outcome:
-
-Docker:
-```bash
-docker-compose up -d swapbot
-```
-No Docker:
-```bash
-python refund.py
-```
-The swapbot should be running from there on
-
-If you wish to use the tools, you can attach to the swapbot-tools container with
-```bash
-docker exec -it swapbot-tools sh
-```
-
-## What tools are there?
+# What tools are there?
 
 Swap initiator
 ```bash
@@ -50,7 +7,7 @@ python swap.py domi167 somiadow hydra stmich
 ```
 Transactions with a swapper
 ```bash
-python swapper.py domi167
+python transactions.py domi167
 ```
 All_swaps.js equivalent:
 ```bash
@@ -65,3 +22,76 @@ Half assed timestamps of today's swaps
 ```bash
 python return_time.py
 ```
+
+# How to get it going
+
+## ------------ Docker ------------
+```bash
+docker-compose build
+docker-compose up -d swapbot-tools
+docker exec -it swapbot-tools sh
+python login.py
+```
+Now before you start the bot, you should adjust all your balances (if needed) by using the swapperBalances.csv.
+If someone gave you money, you should put a negative balance:
+```txt
+domi167,-5.0
+```
+If you donated any amount to someone you should put a positive balance:
+```txt
+domi167,420.69
+```
+If you were scammed and don't want to be reminded, you should put a positive balance, but not the full amount [the bot would be sending the $5 back]:
+```txt
+moneyburner,4.95
+```
+
+You can see the balances of more than 5¢ by running
+```bash
+python all_swaps.py
+```
+
+If you wish to use the tools, you can attach to the swapbot-tools container with
+```bash
+docker exec -it swapbot-tools sh
+```
+CTRL+D to detach
+
+Once you are satisfied with the outcome:
+Run the bot:
+```bash
+docker-compose up -d swapbot
+```
+
+## ------------ No Docker ------------
+
+```bash
+pip install --no-cache-dir -r requirements.txt
+pip install requests
+python login.py
+```
+
+Now before you start the bot, you should adjust all your balances (if needed) by using the swapperBalances.csv.
+If someone gave you money, you should put a negative balance:
+```txt
+domi167,-5.0
+```
+If you donated any amount to someone you should put a positive balance:
+```txt
+domi167,420.69
+```
+If you were scammed and don't want to be reminded, you should put a positive balance, but not the full amount [the bot would be sending the $5 back]:
+```txt
+moneyburner,4.95
+```
+
+You can see what they are with:
+```bash
+python all_swaps.py
+```
+
+Once you are satisfied with the outcome, you can run the bot:
+```bash
+python refund.py
+```
+The swapbot should be running from there on
