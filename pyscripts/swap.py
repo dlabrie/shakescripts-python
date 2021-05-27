@@ -21,7 +21,7 @@ for i in sys.argv:
             print("-- Don't have enough funds")
             exit()
 
-        wallet["balance"] -= 5
-        response = sendFunds(recipient, "You pong 🏓😏 - My dad didn't love me as a child, but I don't blame him. I wasn't born until he was an adult.", "5.00", wallet["id"])
+        wallet["balance"] =  round(wallet["balance"]-5,2)
+        response = sendFunds(recipient, "You pong 🏓 | #ShakingSats | Why did the gardener get a second job? He wasn't raking in enough. | DM on Discord to be removed", "5.00", wallet["id"])
         print(response.text)
     print("")
