@@ -22,7 +22,10 @@ Fastest swappers of the day
 ```bash
 python time_to_swap.py
 ```
-
+Check wallet balances
+```bash
+python wallets.py
+```
 Half assed timestamps of today's swaps
 ```bash
 python return_time.py

@@ -48,7 +48,7 @@ def getJWT():
     return jwt
 
 def shakepayAPIAuth(shakepayUsername, shakepayPassword):
-    print("Calling Shakepay API Endpoint using POST /authentication")
+    #print("Calling Shakepay API Endpoint using POST /authentication")
     headers =  {
         "accept": "application/json",
         "cache-control": "no-cache",
@@ -63,7 +63,7 @@ def shakepayAPIAuth(shakepayUsername, shakepayPassword):
     return requests.post("https://api.shakepay.com/authentication", json=credentials, headers=headers) 
 
 def shakepayAPIPost(endpoint, jsonData):
-    print("Calling Shakepay API Endpoint using POST "+endpoint)
+    #print("Calling Shakepay API Endpoint using POST "+endpoint)
     headers =  {
         "authorization": getJWT(),
         "accept": "application/json",
@@ -78,7 +78,7 @@ def shakepayAPIPost(endpoint, jsonData):
     return requests.post("https://api.shakepay.com"+endpoint, json=jsonData, headers=headers) 
 
 def shakepayAPIGet(endpoint):
-    print("Calling Shakepay API Endpoint using GET "+endpoint)
+    #print("Calling Shakepay API Endpoint using GET "+endpoint)
     headers =  {
         "authorization": getJWT(),
         "accept": "application/json",
@@ -98,7 +98,7 @@ def saveTransactionsCache(transactions):
     date = datetime.datetime.utcnow()
     unixDate = calendar.timegm(date.utctimetuple())
     transactions = { "lastPull":unixDate, "data":transactions }
-    
+
     global transactionsJson
     transactionsJson = transactions
 
@@ -346,6 +346,10 @@ def getCADWallet():
     for wallet in wallets:
         if wallet["currency"] == "CAD":
             return wallet
+
+def getWallets():
+    walletResponse = shakepayAPIGet("/wallets")
+    return json.loads(walletResponse.text)["data"]
 
 def sendFunds(recipient, note, amount, wallet):
     print("Sending",recipient,"$"+str(amount),"with the note:",note)
