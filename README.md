@@ -1,3 +1,8 @@
+# ShakePay Python Swapbot
+
+These scripts and bot are provided "as is" and do not have any guarantees on their outcome. By using these scripts you acknowledge this disclamer and assume full responsibility of using them.
+
+If you wish to donate, send any amount other than 5$ to domi167. BTC and ETH Accepted :)
 
 # What tools are there?
 
