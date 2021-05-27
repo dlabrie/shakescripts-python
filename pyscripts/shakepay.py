@@ -98,6 +98,10 @@ def saveTransactionsCache(transactions):
     date = datetime.datetime.utcnow()
     unixDate = calendar.timegm(date.utctimetuple())
     transactions = { "lastPull":unixDate, "data":transactions }
+    
+    global transactionsJson
+    transactionsJson = transactions
+
     f.write(json.dumps(transactions))
     f.close()
 
