@@ -22,6 +22,11 @@ Fastest swappers of the day
 ```bash
 python time_to_swap.py
 ```
+Fastest swappers (avg swappers) of the last n day
+```bash
+python days_fast_swaps.py 6
+```
+
 Check wallet balances
 ```bash
 python wallets.py

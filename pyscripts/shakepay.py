@@ -264,6 +264,10 @@ def todays_swappers():
     return swapperBalance
 
 def todays_swappers():
+    return days_swappers()
+
+def days_swappers(n=1):
+    n-=1
     transactionsCache = getTransactionsCache()
     transactions = {key: val for key, val in sorted(transactionsCache["data"].items(), key = lambda item: int(item[1]["createAtUnix"]), reverse=True)}
 
@@ -274,7 +278,7 @@ def todays_swappers():
         date = datetime.datetime.strptime(transactions[transaction]["createdAt"].replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
         createAtUnix = calendar.timegm(date.utctimetuple())
 
-        if createAtUnix < midnightUnix():
+        if createAtUnix < midnightUnix()-(86400*n):
             continue
 
         if transactions[transaction]["direction"] == "credit":
@@ -288,6 +292,7 @@ def todays_swappers():
                 swapperBalance[swapper]=0
 
     return swapperBalance
+
 
 def badge_swappers():
     transactionsCache = getTransactionsCache()
