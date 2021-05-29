@@ -60,13 +60,13 @@ for swapper in swapperDaySwaps:
 for swapper in speeds:
     if len(speeds[swapper].items()) > 0:
         avg = round(sum(speeds[swapper].values())/len(speeds[swapper].items()))
-        speeds[swapper]["average"] = avg
+        speeds[swapper]["avg"] = avg
     if len(speeds[swapper].items()) == 0:
-        speeds[swapper]["average"] = 99999999999999999
+        speeds[swapper]["avg"] = 99999999999999999
 
-speeds = {k: v for k, v in sorted(speeds.items(), key=lambda item: item[1]["average"])}
+speeds = {k: v for k, v in sorted(speeds.items(), key=lambda item: item[1]["avg"])}
 for swapper in speeds:
-    speed = speeds[swapper]["average"]
+    speed = speeds[swapper]["avg"]
     
     if speed == 99999999999999999:
         continue
@@ -80,4 +80,4 @@ for swapper in speeds:
     end = swapper[-1]
     swapperCensored = start + (re.sub(r"[a-zA-Z0-9]","🏓", swapper[2:-1])) + end
 
-    print(swapper + " | average is " + printStr + " | "+str(speeds[swapper]))
+    print(swapper + " | avg is " + printStr + " | "+str(speeds[swapper]))
