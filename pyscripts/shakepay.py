@@ -7,6 +7,7 @@ import uuid
 import json
 import pytz
 import csv
+import time
 
 def getUUID():
     fakeUUID = ""
@@ -60,7 +61,12 @@ def shakepayAPIAuth(shakepayUsername, shakepayPassword):
         "x-device-unique-id": getUUID(),
     }
     credentials =  {"strategy":"local","username":shakepayUsername,"password":shakepayPassword}
-    return requests.post("https://api.shakepay.com/authentication", json=credentials, headers=headers) 
+    try:
+        return requests.post("https://api.shakepay.com/authentication", json=credentials, headers=headers) 
+    except Exception:
+        print("Request failed, backing off for 5 seconds.")
+        time.sleep(5)
+        return shakepayAPIAuth(shakepayUsername, shakepayPassword)
 
 def shakepayAPIPost(endpoint, jsonData):
     #print("Calling Shakepay API Endpoint using POST "+endpoint)
@@ -75,7 +81,12 @@ def shakepayAPIPost(endpoint, jsonData):
         "x-device-ip-address": "10.69.4.20",
         "x-device-unique-id": getUUID(),
     }
-    return requests.post("https://api.shakepay.com"+endpoint, json=jsonData, headers=headers) 
+    try:
+        return requests.post("https://api.shakepay.com"+endpoint, json=jsonData, headers=headers) 
+    except Exception:
+        print("Request failed, backing off for 5 seconds.")
+        time.sleep(5)
+        return shakepayAPIPost(endpoint, jsonData)
 
 def shakepayAPIGet(endpoint):
     #print("Calling Shakepay API Endpoint using GET "+endpoint)
@@ -90,7 +101,12 @@ def shakepayAPIGet(endpoint):
         "x-device-ip-address": "10.69.4.20",
         "x-device-unique-id": getUUID(),
     }
-    return requests.get("https://api.shakepay.com"+endpoint, headers=headers) 
+    try:
+        return requests.get("https://api.shakepay.com"+endpoint, headers=headers) 
+    except Exception:
+        print("Request failed, backing off for 5 seconds.")
+        time.sleep(5)
+        return shakepayAPIGet(endpoint)
 
 def saveTransactionsCache(transactions):
     f = open(".transactions", "w")

@@ -23,7 +23,6 @@ for i in sys.argv:
             exit()
 
         cInitiate = checkInitiate(recipient)
-        print(cInitiate)
         
         if cInitiate["allow_initiate"] == 0:
             print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
@@ -32,6 +31,6 @@ for i in sys.argv:
         else:
             if cInitiate["allow_initiate"] == 1:
                 wallet["balance"] =  round(wallet["balance"]-5,2)
-                #response = sendFunds(recipient, "You pong 🏓 | #ShakingSats | JOKE: I took a job as the head of Old McDonald's farm. I'm the CIEIO. | DM on Discord to be removed", "5.00", wallet["id"])
-                #print(response.text)
+                response = sendFunds(recipient, "You pong 🏓 | #ShakingSats | I love eye jokes. The cornea the better. | DM on Discord to be removed", "5.00", wallet["id"])
+                print(response.text)
     print("")
