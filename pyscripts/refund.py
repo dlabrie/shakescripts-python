@@ -21,12 +21,13 @@ while True:
                 print("Not enough funds")
                 break
 
-            checkReturn = checkReturn(swapper)
+            creturn = checkReturn(swapper)
+            print(creturn)
             
-            if checkReturn["allow_return"] == "0":
-                print("It appears "+recipient+" has been added to the do not return list on "+checkReturn["added_time"]+" with reason: "+checkReturn["reason"])
+            if creturn["allow_return"] == 0:
+                print("It appears "+swapper+" has been added to the do not return list on "+creturn["added_time"]+" with reason: "+creturn["reason"])
             else:
-                if checkReturn["allow_return"] == "1":
+                if creturn["allow_return"] == 1:
                     print("sending $5 to "+ swapper)
                     balance -= 5.0
                     response = sendFunds(swapper, "Thanks for swapping with domi167 swapbot @"+swapper+" 🏓", "5.00", wallet["id"])
@@ -36,5 +37,5 @@ while True:
             print("This swap is out of range for this script ($", round(swaps[swapper], 2), swapper,")" )
 
     print("\nsleeping\n"+str(datetime.datetime.now()))
-    time.sleep(20)
+    time.sleep(2)
 
