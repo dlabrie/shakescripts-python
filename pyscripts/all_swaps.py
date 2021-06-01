@@ -24,11 +24,11 @@ print("\n\n------------ These people owe you ------------")
 for transaction in swapsSummary:
     if swapsSummary[transaction]["balance"] < -0.05:
         print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | "+swapsSummary[transaction]["transaction"]["note"]+" |", swapsSummary[transaction]["swapper"], "|", swapsSummary[transaction]["balance"])
-        sumFunds += swapsSummary[transaction]["transaction"]["amount"]
+        sumFunds += swapsSummary[transaction]["balance"]
 
 badgeSwappers = badge_swappers()
 print("\n\n------------ Stats ------------")
-print("You're missing $"+str(round(sumFunds,2))+" Canadian Rupees from your wallet")
+print("You're missing $"+str(round(sumFunds,2)*-1)+" Canadian Rupees from your wallet")
 print("You've swapped with "+str(len(badgeSwappers.keys()))+" different friends since May 3rd 🏓")
 print("You've swapped with "+str(len(swaps.keys()))+" different friends since the beginning🏓")
 
