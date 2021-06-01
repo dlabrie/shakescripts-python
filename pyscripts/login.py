@@ -45,4 +45,5 @@ if jwtAccessToken["mfa"]==True:
 
   jwtAccessToken = jwt.decode(accessResponse["accessToken"], algorithms="HS256", options={"verify_signature": False})
   
-updateTransactions()
+saveTransactionsCache({})
+updateTransactions(2000)
