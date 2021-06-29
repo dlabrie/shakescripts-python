@@ -8,6 +8,7 @@ import json
 import pytz
 import csv
 import time
+import jwt
 
 def getUUID():
     fakeUUID = ""
@@ -108,6 +109,35 @@ def shakepayAPIGet(endpoint):
         time.sleep(5)
         return shakepayAPIGet(endpoint)
 
+def getWaitlistStats():
+    waitlistResponse = json.loads(shakepayAPIGet("/card/waitlist").text)
+    transactions = waitlistResponse["history"]
+
+    counter = 0
+    for transaction in waitlistResponse["history"]:
+
+        date = datetime.datetime.strptime(transaction["createdAt"].replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
+        createAtUnix = calendar.timegm(date.utctimetuple())
+
+        if createAtUnix < midnightUnix():
+            continue
+
+        counter+=1
+
+    return {
+        "position": waitlistResponse["rank"],
+        "points": waitlistResponse["score"],
+        "swapsToday": counter,
+    }
+
+shaketag = ""
+def getShaketag():
+    global shaketag
+    if shaketag == "":
+        user_id = jwt.decode(getJWT(), algorithms="HS256", options={"verify_signature": False})["userId"]
+        shaketag = json.loads(shakepayAPIGet("/users/"+user_id).text)["username"]
+    return shaketag
+
 def saveTransactionsCache(transactions):
     f = open(".transactions", "w")
 
@@ -188,14 +218,13 @@ def updateTransactions(size=200):
             transaction["createAtUnix"] = createAtUnix
             transactions[transaction["transactionId"]] = transaction
     
-        print("checked "+str(transactionCounter)+" from this pull")
-
+        #print("checked "+str(transactionCounter)+" from this pull")
         if transactionCounter != size:
-            print("got less than "+str(size)+" transactions, means we reached the end")
+            #print("got less than "+str(size)+" transactions, means we reached the end")
             break;
 
         if foundExistingTransaction > 10:
-            print("found more than 10 transactions, no need to proceed")
+            #print("found more than 10 transactions, no need to proceed")
             break;
 
         page += 1
@@ -254,32 +283,6 @@ def all_swaps():
     return swapperBalance
 
 def todays_swappers():
-    transactionsCache = getTransactionsCache()
-    transactions = {key: val for key, val in sorted(transactionsCache["data"].items(), key = lambda item: int(item[1]["createAtUnix"]), reverse=True)}
-
-    swapperBalance = {}
-
-    for transaction in transactions:
-
-        date = datetime.datetime.strptime(transactions[transaction]["createdAt"].replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
-        createAtUnix = calendar.timegm(date.utctimetuple())
-
-        if createAtUnix < midnightUnix():
-            continue
-
-        if transactions[transaction]["direction"] == "credit":
-            swapper = transactions[transaction]["from"]["label"].replace("@","");
-            if swapper not in swapperBalance:
-                swapperBalance[swapper]=0
-
-        if transactions[transaction]["direction"] == "debit":
-            swapper = transactions[transaction]["to"]["label"].replace("@","");
-            if swapper not in swapperBalance:
-                swapperBalance[swapper]=0
-
-    return swapperBalance
-
-def todays_swappers():
     return days_swappers()
 
 def days_swappers(n=1):
@@ -297,18 +300,12 @@ def days_swappers(n=1):
         if createAtUnix < midnightUnix()-(86400*n):
             continue
 
-        if transactions[transaction]["direction"] == "credit":
-            swapper = transactions[transaction]["from"]["label"].replace("@","");
-            if swapper not in swapperBalance:
-                swapperBalance[swapper]=0
-
         if transactions[transaction]["direction"] == "debit":
             swapper = transactions[transaction]["to"]["label"].replace("@","");
             if swapper not in swapperBalance:
                 swapperBalance[swapper]=0
 
     return swapperBalance
-
 
 def badge_swappers():
     transactionsCache = getTransactionsCache()
