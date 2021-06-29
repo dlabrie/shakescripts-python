@@ -1,17 +1,23 @@
 import sys
 from shakepay import *
 from labrie import *
+import time
 
 wallet = getCADWallet()
+todays = todays_swappers()
 
 checkIfTransactionUpdatesNeeded()
 
+count = 0
 for i in sys.argv:
     if i=="swap.py": 
         continue
     recipient = i.lower()
 
-    todays = todays_swappers()
+    if count % 10 == 9 :
+        todays = todays_swappers()
+
+    count+=1
 
     if recipient in todays:
         print("-- You swapped with",recipient,"already");
@@ -19,8 +25,19 @@ for i in sys.argv:
         if wallet["balance"] > 5:
             print("Looks we got $"+str(wallet["balance"])," in the wallet, we're good")
         else:
-            print("-- Don't have enough funds")
-            exit()
+            while True:
+                wallet = getCADWallet()
+                if wallet["balance"] > 40:
+                    checkIfTransactionUpdatesNeeded()
+                    todays = todays_swappers()
+                    break;
+                else:
+                    print("-- Don't have enough funds ($"+str(round(wallet["balance"],2))+"), will check in 60s")
+                    time.sleep(60)
+        
+        if recipient in todays:
+            print("-- You swapped with",recipient,"already");
+            continue
 
         cInitiate = checkInitiate(recipient)
         
@@ -31,6 +48,7 @@ for i in sys.argv:
         else:
             if cInitiate["allow_initiate"] == 1:
                 wallet["balance"] =  round(wallet["balance"]-5,2)
-                response = sendFunds(recipient, "You pong 🏓 | #ShakingSats | I love eye jokes. The cornea the better. | DM on Discord to be removed", "5.00", wallet["id"])
+                response = sendFunds(recipient, "Good morning @"+recipient+", please return this fiver 🏓 | #ShakingSats", "5.00", wallet["id"])
                 print(response.text)
+                time.sleep(2)
     print("")
