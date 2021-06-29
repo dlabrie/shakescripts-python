@@ -15,11 +15,12 @@ swapsSummary = {key: val for key, val in sorted(swapsSummary.items(), key = lamb
 
 for transaction in swapsSummary:
     print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | "+swapsSummary[transaction]["transaction"]["note"]+" |", swapsSummary[transaction]["swapper"])
+    #print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | "+swapsSummary[transaction]["transaction"]["note"])
 
 
 badgeSwappers = badge_swappers()
 print("\n\n------------ Stats ------------")
-print("You've swapped with "+str(len(swaps.keys()))+" different friends today 🏓")
+print("You've swapped with "+str(len(swaps.keys()))+" different steaks 🥩 🏓")
 
 print("\n")
 
