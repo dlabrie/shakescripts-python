@@ -1,5 +1,5 @@
 from getpass import getpass
-from shakepay import *
+from modules.shakepay import *
 import json
 import jwt
 
