@@ -56,7 +56,7 @@ def shakepayAPIAuth(shakepayUsername, shakepayPassword):
         "cache-control": "no-cache",
         "content-type": "application/json",
         "pragma": "no-cache",
-        "user-agent": "Shakepay App v1.6.96 (16096) on Apple iPhone (iOS 14.5)",
+        "user-agent": "Shakepay App v1.6.96 (16096) on domi167 bot",
         "x-device-mac-address": "02:00:00:00:00:00",
         "x-device-ip-address": "10.69.4.20",
         "x-device-unique-id": getUUID(),
@@ -77,7 +77,7 @@ def shakepayAPIPost(endpoint, jsonData):
         "cache-control": "no-cache",
         "content-type": "application/json",
         "pragma": "no-cache",
-        "user-agent": "Shakepay App v1.6.96 (16096) on Apple iPhone (iOS 14.5)",
+        "user-agent": "Shakepay App v1.6.96 (16096) on domi167 bot",
         "x-device-mac-address": "02:00:00:00:00:00",
         "x-device-ip-address": "10.69.4.20",
         "x-device-unique-id": getUUID(),
@@ -97,7 +97,7 @@ def shakepayAPIGet(endpoint):
         "cache-control": "no-cache",
         "content-type": "application/json",
         "pragma": "no-cache",
-        "user-agent": "Shakepay App v1.6.96 (16096) on Apple iPhone (iOS 14.5)",
+        "user-agent": "Shakepay App v1.6.96 (16096) on domi167 bot",
         "x-device-mac-address": "02:00:00:00:00:00",
         "x-device-ip-address": "10.69.4.20",
         "x-device-unique-id": getUUID(),
@@ -110,8 +110,13 @@ def shakepayAPIGet(endpoint):
         return shakepayAPIGet(endpoint)
 
 def getWaitlistStats():
-    waitlistResponse = json.loads(shakepayAPIGet("/card/waitlist").text)
-    transactions = waitlistResponse["history"]
+    try:
+        waitlistResponse = json.loads(shakepayAPIGet("/card/waitlist").text)
+        transactions = waitlistResponse["history"]
+    except Exception:
+        print("Request failed, backing off for 5 seconds.")
+        time.sleep(5)
+        return getWaitlistStats();
 
     counter = 0
     for transaction in waitlistResponse["history"]:
@@ -135,7 +140,13 @@ def getShaketag():
     global shaketag
     if shaketag == "":
         user_id = jwt.decode(getJWT(), algorithms="HS256", options={"verify_signature": False})["userId"]
-        shaketag = json.loads(shakepayAPIGet("/users/"+user_id).text)["username"]
+        try:
+            shaketag = json.loads(shakepayAPIGet("/users/"+user_id).text)["username"]
+        except Exception:
+            print("Request failed, backing off for 5 seconds.")
+            time.sleep(5)
+            return getShaketag();
+
     return shaketag
 
 def saveTransactionsCache(transactions):
@@ -171,63 +182,74 @@ def getTransactionsCache():
     transactionsJson = json.loads(transactions)
     return transactionsJson
 
-def pullTransactions(page,size=200):
-    if page == 1 and size == 200:
-        body = {"filterParams":{"currencies":["CAD"]}}
+def pullTransactions(isInit: bool, timestamp: str):
+    queryString = ""
+    if isInit == True:
+        queryString = "?limit=2000&currency=CAD&before="+timestamp
     else:
-        body =  {"pagination":{"descending":True,"rowsPerPage":size,"page":page}, "filterParams":{}}
+        queryString = "?limit=2000&currency=CAD&since="+timestamp
 
-    print("Will pull transactions page "+str(page), body)
+    print("Will pull transactions page "+str(queryString))
 
-    return shakepayAPIPost("/transactions/history", body)
+    apiResponse = shakepayAPIGet("/transactions/history"+queryString)
+    try:
+        return json.loads(apiResponse.text)
+    except Exception:
+        print("Request failed, backing off for 5 seconds.")
+        time.sleep(5)
+        return pullTransactions(isInit, timestamp);
 
-def updateTransactions(size=200):
-    page = 1
+globalTimestamp = datetime.datetime.utcnow().isoformat()+"Z"
+
+def updateTransactions():
+    global globalTimestamp
+
     transactionsCache = getTransactionsCache()
     transactions = transactionsCache["data"]
 
+    isInit = False
+    if len(transactions.keys()) == 0:
+        isInit = True
+
     while True:
         addedTransactions = 0
-        foundExistingTransaction = 0
-        foundStart = False
         transactionCounter = 0
 
-        newTransactionsResponse = pullTransactions(page, size)
-        newTransactions = json.loads(newTransactionsResponse.text)
+        newTransactions = pullTransactions(isInit, globalTimestamp)
 
-        for transaction in newTransactions["data"]:
+        for transaction in newTransactions:
             transactionCounter+=1
             # check if already in ledger
             if transaction["transactionId"] in transactions:
-                foundExistingTransaction += 1
                 continue
 
             if transaction["type"]!="peer": 
-                continue
-            if transaction["currency"]!="CAD": 
                 continue
 
             date = datetime.datetime.strptime(transaction["createdAt"].replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
             createAtUnix = calendar.timegm(date.utctimetuple())
             if createAtUnix < 1618963200:
-                foundExistingTransaction += 1
-                foundStart = True
                 break
 
             addedTransactions += 1
             transaction["createAtUnix"] = createAtUnix
             transactions[transaction["transactionId"]] = transaction
+
+            globalTimestamp = transaction["createdAt"];
     
         #print("checked "+str(transactionCounter)+" from this pull")
-        if transactionCounter != size:
+        if transactionCounter < 2000:
             #print("got less than "+str(size)+" transactions, means we reached the end")
-            break;
-
-        if foundExistingTransaction > 10:
-            #print("found more than 10 transactions, no need to proceed")
-            break;
-
-        page += 1
+            break
+    
+    # Check what is the latest transaction in cache, so we load from there next time :)
+    date = datetime.datetime.strptime(globalTimestamp.replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
+    globalTimestampUnix = calendar.timegm(date.utctimetuple())
+    for transactionId in transactions:
+        transaction = transactions[transactionId]
+        if globalTimestampUnix < transaction["createAtUnix"]:
+            globalTimestampUnix = transaction["createAtUnix"]
+            globalTimestamp = transaction["createdAt"]
 
     if addedTransactions > 0:
         saveTransactionsCache(transactions)
@@ -242,7 +264,6 @@ def checkIfTransactionUpdatesNeeded():
     if unixDate-600 > lastPull:
         print("Haven't pulled transactions in over 5 minutes.")
         updateTransactions()
-    
 
 def all_swaps():
     transactionsCache = getTransactionsCache()
@@ -359,15 +380,25 @@ def midnightUnix():
             .utctimetuple())
 
 def getCADWallet():
-    walletResponse = shakepayAPIGet("/wallets")
-    wallets = json.loads(walletResponse.text)["data"]
+    wallets = getWallets()
     for wallet in wallets:
         if wallet["currency"] == "CAD":
             return wallet
 
+def getBTCWallet():
+    wallets = getWallets()
+    for wallet in wallets:
+        if wallet["currency"] == "BTC":
+            return wallet
+
 def getWallets():
     walletResponse = shakepayAPIGet("/wallets")
-    return json.loads(walletResponse.text)["data"]
+    try:
+        return json.loads(walletResponse.text)["data"]
+    except Exception:
+        print("Request failed, backing off for 5 seconds.")
+        time.sleep(5)
+        return getWallets();
 
 def sendFunds(recipient, note, amount, wallet):
     print("Sending",recipient,"$"+str(amount),"with the note:",note)

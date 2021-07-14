@@ -1,4 +1,4 @@
-from shakepay import *
+from modules.shakepay import *
 
 transactionsCache = getTransactionsCache()
 transactions = {key: val for key, val in sorted(transactionsCache["data"].items(), key = lambda item: int(item[1]["createAtUnix"]), reverse=True)}

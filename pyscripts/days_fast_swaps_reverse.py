@@ -5,7 +5,6 @@ import datetime
 
 n = int(sys.argv[1])
 days_swaps = days_swappers(n)
-
 speeds = {}
 
 swapperDaySwaps = {}
@@ -33,28 +32,29 @@ for swapper in swapperDaySwaps:
     for transactionInADay in swapperDaySwaps[swapper]:
         foundADebit=False
         foundACredit=False
-        initiated=0
+        received=0
         returned=0
 
         swapperDaySwaps[swapper][transactionInADay] = {key: val for key, val in sorted(swapperDaySwaps[swapper][transactionInADay].items(), key = lambda item: int(item[1]["createAtUnix"]), reverse=False)}
 
         for transaction in swapperDaySwaps[swapper][transactionInADay]:
             swap = swapperDaySwaps[swapper][transactionInADay][transaction]
-
-            if foundACredit == True and foundADebit == False:
-                break #didnt initiate
-
-            if swap["direction"] == "debit":
-                foundADebit = True
-                initiated = swap["createAtUnix"]
+            
+            if foundACredit == False and foundADebit == True:
+                break #didnt return
 
             if swap["direction"] == "credit":
                 foundACredit = True
-                if foundADebit == True:
-                    returned = swap["createAtUnix"]
+                received = swap["createAtUnix"]
+
+            if swap["direction"] == "debit" and foundACredit == True:
+                foundADebit = True
+                returned = swap["createAtUnix"]
+            
+            print(swap["direction"]+" "+str(foundACredit)+" "+str(foundADebit)+" "+str(swap["createAtUnix"]))
             
             if foundACredit == True and foundADebit == True:
-                speeds[swapper][transactionInADay]=(returned-initiated)
+                speeds[swapper][transactionInADay]=(returned-received)
                 break;
 
 for swapper in speeds:

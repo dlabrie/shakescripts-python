@@ -1,5 +1,5 @@
-from shakepay import *
-from labrie import checkReturn, ping
+from modules.shakepay import *
+from modules.labrie import checkReturn, ping
 import time
 import datetime
 

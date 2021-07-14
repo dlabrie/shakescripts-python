@@ -1,6 +1,6 @@
 import sys
-from shakepay import *
-from labrie import *
+from modules.shakepay import *
+from modules.labrie import *
 import time
 
 wallet = getCADWallet()
@@ -48,7 +48,7 @@ for i in sys.argv:
         else:
             if cInitiate["allow_initiate"] == 1:
                 wallet["balance"] =  round(wallet["balance"]-5,2)
-                response = sendFunds(recipient, "Good morning @"+recipient+", please return this fiver 🏓 | #ShakingSats", "5.00", wallet["id"])
+                response = sendFunds(recipient, "Good morning @"+recipient+", please return this fiver 🏓 | #ShakingSats | You know what 50 cent did when he got hungry? 58 | DM on discord to be removed.", "5.00", wallet["id"])
                 print(response.text)
                 time.sleep(2)
     print("")

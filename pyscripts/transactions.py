@@ -1,5 +1,5 @@
 import sys
-from shakepay import *
+from modules.shakepay import *
 
 for swapper in sys.argv:
     if swapper=="swapper.py": 

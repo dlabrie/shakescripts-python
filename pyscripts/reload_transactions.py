@@ -1,4 +1,4 @@
-from shakepay import *
+from modules.shakepay import *
 
 saveTransactionsCache({})
-updateTransactions(2000)
+updateTransactions()

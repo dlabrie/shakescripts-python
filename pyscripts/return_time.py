@@ -1,4 +1,4 @@
-from shakepay import *
+from modules.shakepay import *
 
 checkIfTransactionUpdatesNeeded()
 todays = todays_swappers()

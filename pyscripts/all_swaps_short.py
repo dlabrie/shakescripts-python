@@ -1,8 +1,7 @@
-from modules.shakepay import *
+from shakepay import *
 
 updateTransactions()
 
-print("\nProcessing...")
 swaps = all_swaps()
 
 swapsSummary = {}
@@ -12,18 +11,19 @@ for swapper in swaps:
         lastTransaction = list(transactions.keys())[0]
         swapsSummary[lastTransaction] = {"createdAtUnix":transactions[lastTransaction]["createAtUnix"] ,"transaction":transactions[lastTransaction], "swapper":swapper, "balance":swaps[swapper]}
 
+
 swapsSummary = {key: val for key, val in sorted(swapsSummary.items(), key = lambda item: int(item[1]["createdAtUnix"]), reverse=True)}
 
 print("\n------------ You owe these people ------------")
 for transaction in swapsSummary:
-    if swapsSummary[transaction]["balance"] > 0.00:
-        print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | "+swapsSummary[transaction]["transaction"]["note"]+" |", swapsSummary[transaction]["swapper"], "|", swapsSummary[transaction]["balance"])
+    if swapsSummary[transaction]["balance"] > 0.05:
+        print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | @"+swapsSummary[transaction]["swapper"], "|", swapsSummary[transaction]["balance"])
 
 sumFunds = 0.00
 print("\n\n------------ These people owe you ------------")
 for transaction in swapsSummary:
     if swapsSummary[transaction]["balance"] < -0.05:
-        print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | "+swapsSummary[transaction]["transaction"]["note"]+" |", swapsSummary[transaction]["swapper"], "|", swapsSummary[transaction]["balance"])
+        print(swapsSummary[transaction]["transaction"]["createdAt"]+" for $"+str(swapsSummary[transaction]["transaction"]["amount"])+" | "+ swapsSummary[transaction]["transaction"]["direction"]+" | @"+swapsSummary[transaction]["swapper"], "|", swapsSummary[transaction]["balance"])
         sumFunds += swapsSummary[transaction]["balance"]
 
 badgeSwappers = badge_swappers()

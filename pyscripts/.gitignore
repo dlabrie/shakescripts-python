@@ -3,3 +3,5 @@ __pycache__
 .transactions
 .jwtToken
 swapperBalances.csv
+.DS_Store
+*.pyc
