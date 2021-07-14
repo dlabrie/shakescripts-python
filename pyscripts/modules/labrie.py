@@ -1,7 +1,7 @@
 import requests
 import json
 import time
-from shakepay import *
+from modules.shakepay import *
 
 def checkInitiate(shaketag):
     headers =  {
