@@ -199,7 +199,7 @@ def pullTransactions(isInit: bool, timestamp: str):
         time.sleep(5)
         return pullTransactions(isInit, timestamp);
 
-globalTimestamp = datetime.datetime.utcnow().isoformat()+"Z"
+globalTimestamp = "2021-04-21T04:00:00.000Z"
 
 def updateTransactions():
     global globalTimestamp
@@ -210,13 +210,16 @@ def updateTransactions():
     isInit = False
     if len(transactions.keys()) == 0:
         isInit = True
+        globalTimestamp = datetime.datetime.utcnow().isoformat()+"Z"
     else:
+        print("Finding latest transaction...")
         # Check what is the latest transaction in cache, so we load from there
         date = datetime.datetime.strptime(globalTimestamp.replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
         globalTimestampUnix = calendar.timegm(date.utctimetuple())
         for transactionId in transactions:
             transaction = transactions[transactionId]
             if globalTimestampUnix < transaction["createAtUnix"]:
+                print("found a newer transaction --- "+transaction["createdAt"])
                 globalTimestampUnix = transaction["createAtUnix"]
                 globalTimestamp = transaction["createdAt"]
 
