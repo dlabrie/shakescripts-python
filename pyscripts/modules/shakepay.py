@@ -199,7 +199,7 @@ def pullTransactions(isInit: bool, timestamp: str):
         time.sleep(5)
         return pullTransactions(isInit, timestamp);
 
-globalTimestamp = "2021-04-21T04:00:00.000Z"
+globalTimestamp = datetime.datetime.utcnow().isoformat()+"Z"
 
 def updateTransactions():
     global globalTimestamp
