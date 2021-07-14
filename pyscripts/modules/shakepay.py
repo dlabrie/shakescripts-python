@@ -199,7 +199,7 @@ def pullTransactions(isInit: bool, timestamp: str):
         time.sleep(5)
         return pullTransactions(isInit, timestamp);
 
-globalTimestamp = datetime.datetime.utcnow().isoformat()+"Z"
+globalTimestamp = "2021-04-21T04:00:00.000Z"
 
 def updateTransactions():
     global globalTimestamp
@@ -210,6 +210,15 @@ def updateTransactions():
     isInit = False
     if len(transactions.keys()) == 0:
         isInit = True
+    else:
+        # Check what is the latest transaction in cache, so we load from there
+        date = datetime.datetime.strptime(globalTimestamp.replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
+        globalTimestampUnix = calendar.timegm(date.utctimetuple())
+        for transactionId in transactions:
+            transaction = transactions[transactionId]
+            if globalTimestampUnix < transaction["createAtUnix"]:
+                globalTimestampUnix = transaction["createAtUnix"]
+                globalTimestamp = transaction["createdAt"]
 
     while True:
         addedTransactions = 0
@@ -236,21 +245,12 @@ def updateTransactions():
             transactions[transaction["transactionId"]] = transaction
 
             globalTimestamp = transaction["createdAt"];
-    
+            
         #print("checked "+str(transactionCounter)+" from this pull")
         if transactionCounter < 2000:
             #print("got less than "+str(size)+" transactions, means we reached the end")
             break
     
-    # Check what is the latest transaction in cache, so we load from there next time :)
-    date = datetime.datetime.strptime(globalTimestamp.replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
-    globalTimestampUnix = calendar.timegm(date.utctimetuple())
-    for transactionId in transactions:
-        transaction = transactions[transactionId]
-        if globalTimestampUnix < transaction["createAtUnix"]:
-            globalTimestampUnix = transaction["createAtUnix"]
-            globalTimestamp = transaction["createdAt"]
-
     if addedTransactions > 0:
         saveTransactionsCache(transactions)
 
