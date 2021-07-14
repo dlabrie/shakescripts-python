@@ -212,14 +212,12 @@ def updateTransactions():
         isInit = True
         globalTimestamp = datetime.datetime.utcnow().isoformat()+"Z"
     else:
-        print("Finding latest transaction...")
         # Check what is the latest transaction in cache, so we load from there
         date = datetime.datetime.strptime(globalTimestamp.replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S.%f%Z")
         globalTimestampUnix = calendar.timegm(date.utctimetuple())
         for transactionId in transactions:
             transaction = transactions[transactionId]
             if globalTimestampUnix < transaction["createAtUnix"]:
-                print("found a newer transaction --- "+transaction["createdAt"])
                 globalTimestampUnix = transaction["createAtUnix"]
                 globalTimestamp = transaction["createdAt"]
 
