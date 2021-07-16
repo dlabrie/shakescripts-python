@@ -248,7 +248,7 @@ def updateTransactions():
             globalTimestamp = transaction["createdAt"];
             
         #print("checked "+str(transactionCounter)+" from this pull")
-        if transactionCounter < 2000:
+        if transactionCounter < 10:
             #print("got less than "+str(size)+" transactions, means we reached the end")
             break
     
