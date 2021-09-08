@@ -32,18 +32,27 @@ print("Sending initial login request")
 response = shakepayAPIAuth(shakepayUsername, shakepayPassword)
 accessResponse = json.loads(response.text)
 
-saveJWT(accessResponse["accessToken"])
+if "accessToken" in accessResponse:
+    saveJWT(accessResponse["accessToken"])
 
-jwtAccessToken = jwt.decode(accessResponse["accessToken"], algorithms="HS256", options={"verify_signature": False})
+    jwtAccessToken = jwt.decode(accessResponse["accessToken"], algorithms="HS256", options={"verify_signature": False})
 
-if jwtAccessToken["mfa"]==True:
-  smsCode = input("Login is being MFA'd, please enter your SMS code [numbers only, no dash] : ")
-  response = shakepayAPIPost("/authentication", {"strategy":"mfa","mfaToken":smsCode})
+    if jwtAccessToken["mfa"]==True:
+        smsCode = input("Login is being MFA'd, please enter your SMS code [numbers only, no dash] : ")
+        response = shakepayAPIPost("/authentication", {"strategy":"mfa","mfaToken":smsCode})
 
-  accessResponse = json.loads(response.text)
-  saveJWT(accessResponse["accessToken"])
+        accessResponse = json.loads(response.text)
 
-  jwtAccessToken = jwt.decode(accessResponse["accessToken"], algorithms="HS256", options={"verify_signature": False})
-  
-saveTransactionsCache({})
-updateTransactions()
+        if "accessToken" in accessResponse:
+            saveJWT(accessResponse["accessToken"])
+
+            jwtAccessToken = jwt.decode(accessResponse["accessToken"], algorithms="HS256", options={"verify_signature": False})
+            
+            saveTransactionsCache({})
+            updateTransactions()
+        else:
+            print(accessResponse)
+
+
+else:
+    print(accessResponse)

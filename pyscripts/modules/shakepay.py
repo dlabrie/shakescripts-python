@@ -52,16 +52,31 @@ def getJWT():
 def shakepayAPIAuth(shakepayUsername, shakepayPassword):
     #print("Calling Shakepay API Endpoint using POST /authentication")
     headers =  {
-        "accept": "application/json",
-        "cache-control": "no-cache",
-        "content-type": "application/json",
-        "pragma": "no-cache",
-        "user-agent": "Shakepay App v1.6.96 (16096) on domi167 bot",
+        "x-device-total-memory": "6014582784",
+        "x-device-serial-number":"",
+        "x-device-name": "",
+        "x-device-has-notch": "false",
+        "user-agent": "Shakepay App v1.7.24 (17024) on domi167 bot",
+        "x-device-locale": "en-CA",
+        "x-device-manufacturer": "Bot",
+        "x-device-is-tablet": "false",
+        "x-device-total-disk-capacity": "127881465856",
+        "x-device-system-name": "Python",
+        "x-device-carrier": "",
+        "x-device-model": "Bot",
+        "x-device-id": "",
+        "x-device-country": "CA",
         "x-device-mac-address": "02:00:00:00:00:00",
-        "x-device-ip-address": "10.69.4.20",
+        "accept-language": "en-ca",
+        "x-device-ip-address": "10.100.100.11",
         "x-device-unique-id": getUUID(),
+        "content-type": "application/json",
+        "accept": "application/json",
+        "x-device-brand": "Bot",
+        "accept-encoding": "gzip, deflate, br",
+        "x-device-system-version": "",
     }
-    credentials =  {"strategy":"local","username":shakepayUsername,"password":shakepayPassword}
+    credentials =  {"strategy":"local","totpType":"sms","username":shakepayUsername,"password":shakepayPassword}
     try:
         return requests.post("https://api.shakepay.com/authentication", json=credentials, headers=headers) 
     except Exception:
@@ -77,7 +92,7 @@ def shakepayAPIPost(endpoint, jsonData):
         "cache-control": "no-cache",
         "content-type": "application/json",
         "pragma": "no-cache",
-        "user-agent": "Shakepay App v1.6.96 (16096) on domi167 bot",
+        "user-agent": "Shakepay App v1.7.24 (17024) on domi167 bot",
         "x-device-mac-address": "02:00:00:00:00:00",
         "x-device-ip-address": "10.69.4.20",
         "x-device-unique-id": getUUID(),
@@ -97,7 +112,7 @@ def shakepayAPIGet(endpoint):
         "cache-control": "no-cache",
         "content-type": "application/json",
         "pragma": "no-cache",
-        "user-agent": "Shakepay App v1.6.96 (16096) on domi167 bot",
+        "user-agent": "Shakepay App v1.7.24 (17024) on domi167 bot",
         "x-device-mac-address": "02:00:00:00:00:00",
         "x-device-ip-address": "10.69.4.20",
         "x-device-unique-id": getUUID(),
